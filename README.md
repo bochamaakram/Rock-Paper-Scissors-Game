@@ -1,50 +1,103 @@
-# Welcome to your Expo app 👋
+# 🎮 Rock Paper Scissors Game (React Native)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**A fun, interactive Rock-Paper-Scissors mobile game built with React Native and TypeScript.
+Play against the computer, beat the countdown timer, and see who reaches 5 points first!**
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+✅ **Classic gameplay — Rock beats Scissors, Scissors beats Paper, Paper beats Rock.**
 
-   ```bash
-   npm install
-   ```
+✅ **Countdown timer — You have 10 seconds to make a move, or you lose the round!**
 
-2. Start the app
+✅ **Dynamic scoring system — First to reach 5 points wins the game.**
 
-   ```bash
-   npx expo start
-   ```
+✅ **Automatic game-over handling — Alerts and visual messages when the game ends.**
 
-In the output, you'll find options to open the app in a
+✅ **Reset button — Instantly restart the game at any time.**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+✅ **Modern UI — Clean design using icons from FontAwesome and FontAwesome5.**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🧠 Game Logic
 
-## Get a fresh project
+Player chooses between Rock, Paper, or Scissors.
 
-When you're ready, run:
+The computer randomly selects one.
 
-```bash
-npm run reset-project
-```
+The winner is determined by standard rules:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+🪨 Rock beats Scissors
 
-## Learn more
+📄 Paper beats Rock
 
-To learn more about developing your project with Expo, look at the following resources:
+✂️ Scissors beats Paper
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+If the player doesn’t choose within 10 seconds, the computer wins that round.
 
-## Join the community
+The first to reach 5 points wins the game.
 
-Join our community of developers creating universal apps.
+## 🛠️ Tech Stack
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**React Native**
+
+**TypeScript**
+
+**react-native-vector-icons (FontAwesome, FontAwesome5)**
+
+**React Hooks (useState, useEffect, useCallback)**
+
+📱 Screens & UI Overview
+🏠 Main Screen
+
+Displays title, scoreboard, and reset button.
+
+Shows the current result and computer’s choice.
+
+Countdown timer visible at the bottom.
+
+✊✋✌️ **Player Choices**
+
+Touchable buttons for Rock, Paper, and Scissors with icons.
+
+Disabled after game over.
+
+🕹️ **Game End**
+
+Alert displays "You won!" or "You lost!".
+
+All inputs disabled until you press the reset button.
+
+🔄 Gameplay Flow
+
+You start with 10 seconds to choose a weapon.
+
+The computer automatically picks after your choice (or when time runs out).
+
+Scores update instantly with results displayed.
+
+The game ends when either player reaches 5 points.
+
+Tap Reset 🔄 to start again.
+
+## ⚙️ How to Run
+1️⃣ Clone the Repository
+
+    git clone https://github.com/yourusername/rock-paper-scissors-reactnative.git
+    cd rock-paper-scissors-reactnative
+
+2️⃣ Install Dependencies
+
+    npm install
+
+3️⃣ Run the App
+
+    npx react-native start
+
+
+In another terminal:
+
+    npx react-native run-android
+    or
+    npx react-native run-ios
+
+
+# this is but a project to put what i learned i in raect-native in action 
