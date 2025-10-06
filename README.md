@@ -100,4 +100,4 @@ In another terminal:
     npx react-native run-ios
 
 
-# this is but a project to put what i learned i in raect-native in action 
+# this is but a project to put what I learned in raect-native in action 
