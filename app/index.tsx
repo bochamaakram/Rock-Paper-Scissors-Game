@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    View,
+    Alert,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
     Text,
     TouchableOpacity,
-    StyleSheet,
-    Alert,
-    SafeAreaView
+    View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 type Weapon = 'rock' | 'paper' | 'scissors';
 
 const RockPaperScissors: React.FC = () => {
     const weapons: Weapon[] = ['rock', 'paper', 'scissors'];
+    const isWeb = Platform.OS === 'web';
     const [playerScore, setPlayerScore] = useState<number>(0);
     const [computerScore, setComputerScore] = useState<number>(0);
     const [countdown, setCountdown] = useState<number>(10);
@@ -121,66 +123,68 @@ const RockPaperScissors: React.FC = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Top Section: Title and Reset Button */}
-            <View>
-                <View style={styles.topSection}>
-                    <Text style={styles.title}>Rock, Paper, Scissors</Text>
-                    <TouchableOpacity
-                        style={styles.playAgainButton}
-                        onPress={resetGame}>
-                        <Text style={styles.playAgainText}><FontAwesome name="refresh" size={14} color="#fff" />
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.scoreboard}>
-                    <Text style={styles.score}>Player: {playerScore}</Text>
-                    <Text style={styles.score}>Computer: {computerScore}</Text>
-                </View>
-            </View>
-
-            {/* Center Section: Results and Game Info */}
-            <View style={styles.centerSection}>
-
-                <View style={styles.resultContainer}>
-                    <Text style={[styles.result, { color: resultColor }]}>
-                        {result}
-                    </Text>
-                </View>
-
-                <Text style={styles.computerChoice}>
-                    {computerChoice}
-                </Text>
-
-            </View>
-            {/* Bottom Section: Weapon Choices */}
-            <View style={styles.bottomSection}>
-                <View style={styles.timer}>
-                    <Text style={styles.timerText}>
-                        Time left: <Text style={styles.countdown}>{countdown}s</Text>
-                    </Text>
-                </View>
-                <View style={styles.choices}>
-                    {weapons.map((weapon) => (
+        <SafeAreaView style={[styles.container, isWeb && styles.webContainerBackground]}>
+            <View style={[styles.mainWrapper, isWeb && styles.webCard]}>
+                {/* Top Section: Title and Reset Button */}
+                <View>
+                    <View style={styles.topSection}>
+                        <Text style={styles.title}>Rock, Paper, Scissors</Text>
                         <TouchableOpacity
-                            key={weapon}
-                            style={[
-                                styles.choice,
-                                gameOver && styles.disabled
-                            ]}
-                            onPress={() => selectWeapon(weapon)}
-                            disabled={gameOver}
-                        >
-                            <Icon
-                                name={getWeaponIcon(weapon)}
-                                size={40}
-                                color="#333"
-                            />
-                            <Text style={styles.choiceText}>
-                                {weapon.charAt(0).toUpperCase() + weapon.slice(1)}
+                            style={styles.playAgainButton}
+                            onPress={resetGame}>
+                            <Text style={styles.playAgainText}><FontAwesome name="refresh" size={14} color="#fff" />
                             </Text>
                         </TouchableOpacity>
-                    ))}
+                    </View>
+                    <View style={styles.scoreboard}>
+                        <Text style={styles.score}>Player: {playerScore}</Text>
+                        <Text style={styles.score}>Computer: {computerScore}</Text>
+                    </View>
+                </View>
+
+                {/* Center Section: Results and Game Info */}
+                <View style={styles.centerSection}>
+
+                    <View style={styles.resultContainer}>
+                        <Text style={[styles.result, { color: resultColor }]}>
+                            {result}
+                        </Text>
+                    </View>
+
+                    <Text style={styles.computerChoice}>
+                        {computerChoice}
+                    </Text>
+
+                </View>
+                {/* Bottom Section: Weapon Choices */}
+                <View style={styles.bottomSection}>
+                    <View style={styles.timer}>
+                        <Text style={styles.timerText}>
+                            Time left: <Text style={styles.countdown}>{countdown}s</Text>
+                        </Text>
+                    </View>
+                    <View style={styles.choices}>
+                        {weapons.map((weapon) => (
+                            <TouchableOpacity
+                                key={weapon}
+                                style={[
+                                    styles.choice,
+                                    gameOver && styles.disabled
+                                ]}
+                                onPress={() => selectWeapon(weapon)}
+                                disabled={gameOver}
+                            >
+                                <Icon
+                                    name={getWeaponIcon(weapon)}
+                                    size={40}
+                                    color="#333"
+                                />
+                                <Text style={styles.choiceText}>
+                                    {weapon.charAt(0).toUpperCase() + weapon.slice(1)}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -191,7 +195,34 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f0f0f0',
+    },
+    webContainerBackground: {
+        backgroundColor: '#e0e0e0', // Slightly darker background for desktop
+        justifyContent: 'center',
+        alignItems: 'center',
         padding: 20,
+    },
+    mainWrapper: {
+        flex: 1,
+        width: '100%',
+        padding: 20,
+    },
+    webCard: {
+        maxWidth: 600,
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 30,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 8,
+        // Reset flex to allow it to be centered vertically if needed or take natural height
+        flex: undefined,
+        minHeight: '60%',
     },
     topSection: {
         flexDirection: 'row',
