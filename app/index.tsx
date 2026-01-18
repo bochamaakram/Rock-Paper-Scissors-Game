@@ -18,6 +18,18 @@ type Weapon = 'rock' | 'paper' | 'scissors';
 
 const RockPaperScissors: React.FC = () => {
     const weapons: Weapon[] = ['rock', 'paper', 'scissors'];
+    const winMessages = [
+        "Nice move!",
+        "Wow!",
+        "Great job!",
+        "Excellent!",
+        "You got this!",
+        "Superb!",
+        "Victory is yours!",
+        "Sharp thinking!",
+        "Way to go!",
+        "Unstoppable!"
+    ];
     const isWeb = Platform.OS === 'web';
     const [playerScore, setPlayerScore] = useState<number>(0);
     const [computerScore, setComputerScore] = useState<number>(0);
@@ -52,11 +64,13 @@ const RockPaperScissors: React.FC = () => {
                 setResult('You win!');
                 setResultColor('#660033');
                 setPlayerScore(prev => prev + 1);
+                const randomMessage = winMessages[Math.floor(Math.random() * winMessages.length)];
                 Toast.show({
                     type: 'success',
                     text1: 'Round Won!',
-                    text2: 'You beat the computer!',
+                    text2: randomMessage,
                     position: 'top',
+                    topOffset: 200, // Move it down towards center
                     visibilityTime: 2000,
                 });
             } else {
@@ -105,7 +119,8 @@ const RockPaperScissors: React.FC = () => {
                     type: 'success',
                     text1: 'CHAMPION!',
                     text2: 'You reached 5 points and won the game!',
-                    position: 'bottom',
+                    position: 'top',
+                    topOffset: 200,
                     visibilityTime: 4000,
                 });
                 if (confettiRef.current) {
@@ -217,7 +232,7 @@ const RockPaperScissors: React.FC = () => {
                 </View>
             </View>
             <ConfettiCannon
-                count={200}
+                count={50}
                 origin={{ x: -10, y: 0 }}
                 autoStart={false}
                 ref={confettiRef}
