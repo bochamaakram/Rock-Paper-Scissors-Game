@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Platform,
@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
+import Toast from 'react-native-toast-message';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import GameResultCard from '../components/GameResultCard';
@@ -25,6 +27,7 @@ const RockPaperScissors: React.FC = () => {
     const [playerChoice, setPlayerChoice] = useState<Weapon | null>(null);
     const [gameOver, setGameOver] = useState<boolean>(false);
     const [resultColor, setResultColor] = useState<string>('#660033');
+    const confettiRef = useRef<any>(null);
 
     // Function to generate random weapon for computer
     const computerPlay = useCallback((): Weapon => {
@@ -49,6 +52,13 @@ const RockPaperScissors: React.FC = () => {
                 setResult('You win!');
                 setResultColor('#660033');
                 setPlayerScore(prev => prev + 1);
+                Toast.show({
+                    type: 'success',
+                    text1: 'Round Won!',
+                    text2: 'You beat the computer!',
+                    position: 'top',
+                    visibilityTime: 2000,
+                });
             } else {
                 setResult('Computer wins!');
                 setResultColor('#660033');
@@ -90,7 +100,17 @@ const RockPaperScissors: React.FC = () => {
             if (playerScore === 5) {
                 setResult('You win the game!');
                 setResultColor('green');
-                Alert.alert('Congratulations!', 'You won the game!');
+                // Alert.alert('Congratulations!', 'You won the game!');
+                Toast.show({
+                    type: 'success',
+                    text1: 'CHAMPION!',
+                    text2: 'You reached 5 points and won the game!',
+                    position: 'bottom',
+                    visibilityTime: 4000,
+                });
+                if (confettiRef.current) {
+                    confettiRef.current.start();
+                }
             } else {
                 setResult('You lose the game!');
                 setResultColor('red');
@@ -196,7 +216,14 @@ const RockPaperScissors: React.FC = () => {
                     </View>
                 </View>
             </View>
-        </SafeAreaView>
+            <ConfettiCannon
+                count={200}
+                origin={{ x: -10, y: 0 }}
+                autoStart={false}
+                ref={confettiRef}
+                fadeOut={true}
+            />
+        </SafeAreaView >
     );
 };
 
