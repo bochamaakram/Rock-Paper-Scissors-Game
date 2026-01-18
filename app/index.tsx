@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import GameResultCard from '../components/GameResultCard';
 
 type Weapon = 'rock' | 'paper' | 'scissors';
 
@@ -20,7 +21,8 @@ const RockPaperScissors: React.FC = () => {
     const [computerScore, setComputerScore] = useState<number>(0);
     const [countdown, setCountdown] = useState<number>(10);
     const [result, setResult] = useState<string>('Choose your weapon!');
-    const [computerChoice, setComputerChoice] = useState<string>('');
+    const [computerWeapon, setComputerWeapon] = useState<Weapon | null>(null);
+    const [playerChoice, setPlayerChoice] = useState<Weapon | null>(null);
     const [gameOver, setGameOver] = useState<boolean>(false);
     const [resultColor, setResultColor] = useState<string>('#660033');
 
@@ -33,7 +35,8 @@ const RockPaperScissors: React.FC = () => {
     // Function to determine winner and update score
     const updateScore = useCallback((playerWeapon: Weapon | null, computerWeapon: Weapon) => {
         if (playerWeapon) {
-            setComputerChoice(`Computer chose: ${computerWeapon}.`);
+            setComputerWeapon(computerWeapon);
+            setPlayerChoice(playerWeapon);
 
             if (playerWeapon === computerWeapon) {
                 setResult("It's a tie!");
@@ -52,7 +55,8 @@ const RockPaperScissors: React.FC = () => {
                 setComputerScore(prev => prev + 1);
             }
         } else {
-            setComputerChoice('Game Over');
+            setComputerWeapon(null);
+            setPlayerChoice(null);
             setResult('You did not make a choice! | You lose the game!');
             setResultColor('red');
             setGameOver(true);
@@ -74,7 +78,8 @@ const RockPaperScissors: React.FC = () => {
         setComputerScore(0);
         setCountdown(10);
         setResult('Choose your weapon!');
-        setComputerChoice('');
+        setComputerWeapon(null);
+        setPlayerChoice(null);
         setGameOver(false);
         setResultColor('#660033');
     }, []);
@@ -91,7 +96,7 @@ const RockPaperScissors: React.FC = () => {
                 setResultColor('red');
                 Alert.alert('Game Over', 'You lost the game!');
             }
-            setComputerChoice('Game Over');
+            // setComputerChoice('Game Over'); // No longer needed as we check gameOver state for UI
             setGameOver(true);
             return;
         }
@@ -151,9 +156,13 @@ const RockPaperScissors: React.FC = () => {
                         </Text>
                     </View>
 
-                    <Text style={styles.computerChoice}>
-                        {computerChoice}
-                    </Text>
+                    {playerChoice && computerWeapon && (
+                        <GameResultCard
+                            playerWeapon={playerChoice}
+                            computerWeapon={computerWeapon}
+                            getWeaponIcon={getWeaponIcon}
+                        />
+                    )}
 
                 </View>
                 {/* Bottom Section: Weapon Choices */}
@@ -297,12 +306,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    computerChoice: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
+
     timer: {
         marginBottom: 30,
     },
