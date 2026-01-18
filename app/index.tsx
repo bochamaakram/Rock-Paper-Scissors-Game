@@ -232,11 +232,13 @@ const RockPaperScissors: React.FC = () => {
                 </View>
             </View>
             <ConfettiCannon
-                count={50}
+                count={10}
                 origin={{ x: -10, y: 0 }}
                 autoStart={false}
                 ref={confettiRef}
                 fadeOut={true}
+                fallSpeed={3000}
+                explosionSpeed={350}
             />
         </SafeAreaView >
     );
