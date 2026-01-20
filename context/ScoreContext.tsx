@@ -3,21 +3,21 @@ import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 type Weapon = 'rock' | 'paper' | 'scissors';
 
-interface GameRound {
+interface GameResult {
     id: string;
-    result: string;
-    playerWeapon: Weapon | null;
-    computerWeapon: Weapon | null;
+    result: string; // "Player Won", "Computer Won", "Timeout"
+    finalPlayerScore: number;
+    finalComputerScore: number;
     timestamp: Date;
 }
 
 interface ScoreContextType {
     playerScore: number;
     computerScore: number;
-    history: GameRound[];
+    history: GameResult[];
     incrementPlayerScore: () => void;
     incrementComputerScore: () => void;
-    addRoundToHistory: (result: string, playerWeapon: Weapon | null, computerWeapon: Weapon | null) => void;
+    addGameResult: (result: string, finalPlayerScore: number, finalComputerScore: number) => void;
     resetGame: () => void;
 }
 
@@ -26,18 +26,18 @@ const ScoreContext = createContext<ScoreContextType | undefined>(undefined);
 export const ScoreProvider = ({ children }: { children: ReactNode }) => {
     const [playerScore, setPlayerScore] = useState(0);
     const [computerScore, setComputerScore] = useState(0);
-    const [history, setHistory] = useState<GameRound[]>([]);
+    const [history, setHistory] = useState<GameResult[]>([]);
 
     const incrementPlayerScore = () => setPlayerScore((prev) => prev + 1);
     const incrementComputerScore = () => setComputerScore((prev) => prev + 1);
 
-    const addRoundToHistory = (result: string, playerWeapon: Weapon | null, computerWeapon: Weapon | null) => {
+    const addGameResult = (result: string, finalPlayerScore: number, finalComputerScore: number) => {
         setHistory((prev) => [
             {
                 id: Date.now().toString(),
                 result,
-                playerWeapon,
-                computerWeapon,
+                finalPlayerScore,
+                finalComputerScore,
                 timestamp: new Date(),
             },
             ...prev,
@@ -47,7 +47,7 @@ export const ScoreProvider = ({ children }: { children: ReactNode }) => {
     const resetGame = () => {
         setPlayerScore(0);
         setComputerScore(0);
-        setHistory([]);
+        // history is preserved
     };
 
     return (
@@ -58,7 +58,7 @@ export const ScoreProvider = ({ children }: { children: ReactNode }) => {
                 history,
                 incrementPlayerScore,
                 incrementComputerScore,
-                addRoundToHistory,
+                addGameResult,
                 resetGame,
             }}
         >

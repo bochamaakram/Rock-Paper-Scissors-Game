@@ -1,6 +1,5 @@
 
 import { useScore } from '@/context/ScoreContext';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React from 'react';
 import { FlatList, Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,29 +10,18 @@ export default function ScoresScreen() {
     const renderItem = ({ item }: { item: any }) => (
         <View style={styles.historyItem}>
             <View style={styles.resultRow}>
-                <Text style={[styles.resultText, item.result.includes('Win') ? styles.winText : item.result.includes('Tie') ? styles.tieText : styles.loseText]}>
+                <Text style={[
+                    styles.resultText,
+                    item.result.includes('Player Won') ? styles.winText :
+                        item.result.includes('Computer Won') ? styles.loseText :
+                            item.result.includes('Timeout') ? styles.loseText : styles.tieText
+                ]}>
                     {item.result}
                 </Text>
-                <Text style={styles.timestamp}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+                <Text style={styles.timestamp}>{new Date(item.timestamp).toLocaleString()}</Text>
             </View>
             <View style={styles.detailsRow}>
-                <View style={styles.weaponContainer}>
-                    <FontAwesome
-                        name={item.playerWeapon === 'rock' ? 'hand-rock-o' : item.playerWeapon === 'paper' ? 'hand-paper-o' : 'hand-scissors-o'}
-                        size={20}
-                        color="#333"
-                    />
-                    <Text style={styles.weaponText}>You: {item.playerWeapon}</Text>
-                </View>
-                <View style={styles.weaponContainer}>
-                    <FontAwesome
-                        name={item.computerWeapon === 'rock' ? 'hand-rock-o' : item.computerWeapon === 'paper' ? 'hand-paper-o' : 'hand-scissors-o'}
-                        size={20}
-                        color="#333"
-                    />
-                    <Text style={styles.weaponText}>Comp: {item.computerWeapon}</Text>
-                </View>
-
+                <Text style={styles.scoreDetail}>Final Score: {item.finalPlayerScore} - {item.finalComputerScore}</Text>
             </View>
         </View>
     );
@@ -43,14 +31,15 @@ export default function ScoresScreen() {
             <View style={styles.header}>
                 <Text style={styles.title}>Game History</Text>
                 <View style={styles.aggregateScore}>
-                    <Text style={styles.scoreText}>Player: {playerScore}</Text>
-                    <Text style={styles.scoreText}>Computer: {computerScore}</Text>
+                    <Text style={styles.scoreText}>Current Session</Text>
+                    <Text style={styles.scoreText}>Player: {playerScore} - Computer: {computerScore}</Text>
                 </View>
             </View>
 
             {history.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>No games played yet. Go play some rounds!</Text>
+                    <Text style={styles.emptyText}>No full games played yet.</Text>
+                    <Text style={styles.emptySubText}>Play until someone reaches 5 points!</Text>
                 </View>
             ) : (
                 <FlatList
@@ -86,15 +75,15 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 5,
         color: '#333',
     },
     aggregateScore: {
-        flexDirection: 'row',
-        gap: 20,
+        alignItems: 'center',
+        gap: 5,
     },
     scoreText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
         color: '#555',
     },
@@ -120,7 +109,8 @@ const styles = StyleSheet.create({
     resultRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 10,
+        alignItems: 'center',
+        marginBottom: 5,
     },
     resultText: {
         fontSize: 18,
@@ -141,17 +131,12 @@ const styles = StyleSheet.create({
     },
     detailsRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
     },
-    weaponContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-    },
-    weaponText: {
-        marginLeft: 5,
-        textTransform: 'capitalize',
-        color: '#444',
+    scoreDetail: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '500',
     },
     emptyContainer: {
         flex: 1,
@@ -159,7 +144,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#888',
+        fontWeight: 'bold',
     },
+    emptySubText: {
+        marginTop: 5,
+        fontSize: 14,
+        color: '#aaa',
+    }
 });

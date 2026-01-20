@@ -40,7 +40,7 @@ const RockPaperScissors: React.FC = () => {
         computerScore,
         incrementPlayerScore,
         incrementComputerScore,
-        addRoundToHistory,
+        addGameResult, // Updated func name
         resetGame: resetContextGame
     } = useScore();
 
@@ -51,6 +51,9 @@ const RockPaperScissors: React.FC = () => {
     const [gameOver, setGameOver] = useState<boolean>(false);
     const [resultColor, setResultColor] = useState<string>('#660033');
     const confettiRef = useRef<any>(null);
+
+    // Track if we already logged the game over to prevent duplicates/loops
+    const [gameResultLogged, setGameResultLogged] = useState<boolean>(false);
 
     // Function to generate random weapon for computer
     const computerPlay = useCallback((): Weapon => {
@@ -68,7 +71,6 @@ const RockPaperScissors: React.FC = () => {
                 const res = "It's a tie!";
                 setResult(res);
                 setResultColor('#660033');
-                addRoundToHistory(res, playerWeapon, computerWeapon);
             } else if (
                 (playerWeapon === 'rock' && computerWeapon === 'scissors') ||
                 (playerWeapon === 'paper' && computerWeapon === 'rock') ||
@@ -78,7 +80,6 @@ const RockPaperScissors: React.FC = () => {
                 setResult(res);
                 setResultColor('#660033');
                 incrementPlayerScore();
-                addRoundToHistory(res, playerWeapon, computerWeapon);
 
                 const randomMessage = winMessages[Math.floor(Math.random() * winMessages.length)];
                 Toast.show({
@@ -94,18 +95,24 @@ const RockPaperScissors: React.FC = () => {
                 setResult(res);
                 setResultColor('#660033');
                 incrementComputerScore();
-                addRoundToHistory(res, playerWeapon, computerWeapon);
             }
         } else {
+            // TIMEOUT CASE
             setComputerWeapon(null);
             setPlayerChoice(null);
             const res = 'You did not make a choice! | You lose the game!';
             setResult(res);
             setResultColor('red');
             setGameOver(true);
-            addRoundToHistory('Timeout Loss', null, null);
+
+            // Log Timeout immediately as game over (if not already logged)
+            if (!gameResultLogged) {
+                // We assume current scores for the record, maybe 0-0 or whatever is current
+                addGameResult('Timeout Loss', playerScore, computerScore);
+                setGameResultLogged(true);
+            }
         }
-    }, [addRoundToHistory, incrementPlayerScore, incrementComputerScore, winMessages]);
+    }, [addGameResult, incrementPlayerScore, incrementComputerScore, winMessages, gameResultLogged, playerScore, computerScore]);
 
     // Function to handle player choice
     const selectWeapon = useCallback((weapon: Weapon) => {
@@ -124,34 +131,41 @@ const RockPaperScissors: React.FC = () => {
         setComputerWeapon(null);
         setPlayerChoice(null);
         setGameOver(false);
+        setGameResultLogged(false); // Reset logging flag
         setResultColor('#660033');
     }, [resetContextGame]);
 
     // Countdown timer effect
     useEffect(() => {
+        // Prevent loops: if game is over, do nothing
+        if (gameOver) return;
+
         if (playerScore === 5 || computerScore === 5) {
-            if (playerScore === 5) {
-                setResult('You win the game!');
-                setResultColor('green');
-                // Alert.alert('Congratulations!', 'You won the game!');
-                Toast.show({
-                    type: 'success',
-                    text1: 'CHAMPION!',
-                    text2: 'You reached 5 points and won the game!',
-                    position: 'top',
-                    topOffset: 200,
-                    visibilityTime: 4000,
-                });
-                if (confettiRef.current) {
-                    confettiRef.current.start();
+            if (!gameResultLogged) {
+                setGameResultLogged(true);
+                if (playerScore === 5) {
+                    setResult('You win the game!');
+                    setResultColor('green');
+                    addGameResult('Player Won', 5, computerScore); // Log Win
+                    Toast.show({
+                        type: 'success',
+                        text1: 'CHAMPION!',
+                        text2: 'You reached 5 points and won the game!',
+                        position: 'top',
+                        topOffset: 200,
+                        visibilityTime: 4000,
+                    });
+                    if (confettiRef.current) {
+                        confettiRef.current.start();
+                    }
+                } else {
+                    setResult('You lose the game!');
+                    setResultColor('red');
+                    addGameResult('Computer Won', playerScore, 5); // Log Loss
+                    Alert.alert('Game Over', 'You lost the game!');
                 }
-            } else {
-                setResult('You lose the game!');
-                setResultColor('red');
-                Alert.alert('Game Over', 'You lost the game!');
+                setGameOver(true);
             }
-            // setComputerChoice('Game Over'); // No longer needed as we check gameOver state for UI
-            setGameOver(true);
             return;
         }
 
@@ -166,7 +180,7 @@ const RockPaperScissors: React.FC = () => {
         }, 1000);
 
         return () => clearTimeout(timer);
-    }, [countdown, playerScore, computerScore, computerPlay, updateScore]);
+    }, [countdown, playerScore, computerScore, computerPlay, updateScore, gameOver, gameResultLogged, addGameResult]);
 
     const getWeaponIcon = (weapon: Weapon) => {
         switch (weapon) {
