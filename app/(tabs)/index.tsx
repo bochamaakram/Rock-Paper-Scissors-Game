@@ -1,3 +1,5 @@
+
+import { useScore } from '@/context/ScoreContext';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -12,7 +14,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import Toast from 'react-native-toast-message';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import GameResultCard from '../components/GameResultCard';
+import GameResultCard from '../../components/GameResultCard';
 
 type Weapon = 'rock' | 'paper' | 'scissors';
 
@@ -31,8 +33,17 @@ const RockPaperScissors: React.FC = () => {
         "Unstoppable!"
     ];
     const isWeb = Platform.OS === 'web';
-    const [playerScore, setPlayerScore] = useState<number>(0);
-    const [computerScore, setComputerScore] = useState<number>(0);
+
+    // Use context for scores
+    const {
+        playerScore,
+        computerScore,
+        incrementPlayerScore,
+        incrementComputerScore,
+        addRoundToHistory,
+        resetGame: resetContextGame
+    } = useScore();
+
     const [countdown, setCountdown] = useState<number>(10);
     const [result, setResult] = useState<string>('Choose your weapon!');
     const [computerWeapon, setComputerWeapon] = useState<Weapon | null>(null);
@@ -54,16 +65,21 @@ const RockPaperScissors: React.FC = () => {
             setPlayerChoice(playerWeapon);
 
             if (playerWeapon === computerWeapon) {
-                setResult("It's a tie!");
+                const res = "It's a tie!";
+                setResult(res);
                 setResultColor('#660033');
+                addRoundToHistory(res, playerWeapon, computerWeapon);
             } else if (
                 (playerWeapon === 'rock' && computerWeapon === 'scissors') ||
                 (playerWeapon === 'paper' && computerWeapon === 'rock') ||
                 (playerWeapon === 'scissors' && computerWeapon === 'paper')
             ) {
-                setResult('You win!');
+                const res = 'You win!';
+                setResult(res);
                 setResultColor('#660033');
-                setPlayerScore(prev => prev + 1);
+                incrementPlayerScore();
+                addRoundToHistory(res, playerWeapon, computerWeapon);
+
                 const randomMessage = winMessages[Math.floor(Math.random() * winMessages.length)];
                 Toast.show({
                     type: 'success',
@@ -74,18 +90,22 @@ const RockPaperScissors: React.FC = () => {
                     visibilityTime: 2000,
                 });
             } else {
-                setResult('Computer wins!');
+                const res = 'Computer wins!';
+                setResult(res);
                 setResultColor('#660033');
-                setComputerScore(prev => prev + 1);
+                incrementComputerScore();
+                addRoundToHistory(res, playerWeapon, computerWeapon);
             }
         } else {
             setComputerWeapon(null);
             setPlayerChoice(null);
-            setResult('You did not make a choice! | You lose the game!');
+            const res = 'You did not make a choice! | You lose the game!';
+            setResult(res);
             setResultColor('red');
             setGameOver(true);
+            addRoundToHistory('Timeout Loss', null, null);
         }
-    }, []);
+    }, [addRoundToHistory, incrementPlayerScore, incrementComputerScore, winMessages]);
 
     // Function to handle player choice
     const selectWeapon = useCallback((weapon: Weapon) => {
@@ -98,15 +118,14 @@ const RockPaperScissors: React.FC = () => {
 
     // Function to reset the game
     const resetGame = useCallback(() => {
-        setPlayerScore(0);
-        setComputerScore(0);
+        resetContextGame();
         setCountdown(10);
         setResult('Choose your weapon!');
         setComputerWeapon(null);
         setPlayerChoice(null);
         setGameOver(false);
         setResultColor('#660033');
-    }, []);
+    }, [resetContextGame]);
 
     // Countdown timer effect
     useEffect(() => {

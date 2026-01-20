@@ -1,8 +1,10 @@
+import { ScoreProvider } from '@/context/ScoreContext';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -25,15 +27,14 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <>
+    <ScoreProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
-      <StatusBar style="auto" />
       <Toast config={toastConfig} />
-    </>
+    </ScoreProvider>
   );
 }
 
